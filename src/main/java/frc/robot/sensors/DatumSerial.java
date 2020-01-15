@@ -1,44 +1,91 @@
 package frc.robot.sensors;
 
+import java.io.OutputStream;
+import java.io.InputStream;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import jssc.SerialPort;
-import jssc.SerialPortEvent; 
-import jssc.SerialPortEventListener; 
-import jssc.SerialPortException;
+import com.fazecast.jSerialComm.*;
 
 public class DatumSerial{
 
     String portName;
     SerialPort serialPort;
     ObjectMapper mapper = new ObjectMapper();
+    byte portNum = 0;
+    int handle = 0;
 
     public DatumSerial(String port) {
-        serialPort = new SerialPort(port);
-        try {
+
+        System.out.println("DatumSerial");        
+        //serialPort = new SerialPort(921600, SerialPort.Port.valueOf("COM3"));       
+                
+        System.out.println("DatumSerial-port created");   
+        
+        try {                
+            serialPort = SerialPort.getCommPort("COM3");
+            System.out.println("DatumSerial-port selected");      
+            serialPort.setComPortParameters(115200, 8, 1, SerialPort.NO_PARITY);
+            serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 100);
+
             serialPort.openPort();
-            serialPort.setParams(921600, 8, 1, 0);//Set params
-            int mask = SerialPort.MASK_RXCHAR;//Prepare mask
-            serialPort.setEventsMask(mask);//Set mask
-            serialPort.addEventListener(new SerialPortReader());//Add SerialPortEventListener
+            System.out.println("DatumSerial-port opened");              
+            /*
+            serialPort.addDataListener(new SerialPortDataListener() {
+                @Override
+                public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_RECEIVED; }
+                @Override
+                public void serialEvent(SerialPortEvent event)
+                {
+                   byte[] newData = event.getReceivedData();
+                   for (int i = 0; i < newData.length; ++i)
+                      System.out.print((char)newData[i]);
+
+                }
+             });            
+             */
+             
+            serialPort.addDataListener(new SerialPortMessageListener() {
+                @Override
+                public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_RECEIVED; }
+             
+                @Override
+                public byte[] getMessageDelimiter() { return new byte[] { (byte)0x0d, (byte)0x0a }; }
+             
+                @Override
+                public boolean delimiterIndicatesEndOfMessage() { return true; }
+             
+                @Override
+                public void serialEvent(SerialPortEvent event)
+                {
+                   byte[] delimitedMessage = event.getReceivedData();
+                   //System.out.println("Received the following delimited message: " + delimitedMessage.toString());
+                   for (int i = 0; i < delimitedMessage.length; ++i)
+                      System.out.print((char)delimitedMessage[i]);                   
+                }               
+            }); 
         }
-        catch (SerialPortException ex){
+        catch (Exception  ex){
             System.out.println(ex);
         }
     }
-    public void write(String command){
+    public void write(String command){        
         try {
-            serialPort.writeBytes(command.getBytes());
+            command = command + "\r\n";
+            System.out.print(command);
+            OutputStream dataOut = serialPort.getOutputStream();
+            dataOut.write(command.getBytes());
         }
-        catch (SerialPortException ex) {
+        catch (Exception ex) {
             System.out.println(ex);
         }
     }
 
     public void read(){
+        System.out.println("read");
 
     }
 
@@ -70,22 +117,12 @@ public class DatumSerial{
     * events that happened to our port. But we will not report on all events but only 
     * those that we put in the mask. In this case the arrival of the data and change the 
     * status lines CTS and DSR
-    */
+    *
     //static class SerialPortReader implements SerialPortEventListener {
     class SerialPortReader implements SerialPortEventListener {
 
         public void serialEvent(SerialPortEvent event) {
-            if(event.isRXCHAR()){//If data is available
-                if(event.getEventValue() == 10){//Check bytes count in the input buffer
-                    //Read data, if 10 bytes available 
-                    try {
-                        byte buffer[] = serialPort.readBytes(10);
-                    }
-                    catch (SerialPortException ex) {
-                        System.out.println(ex);
-                    }
-                }
-            }
+
         }
-    }    
+    }*/   
 }

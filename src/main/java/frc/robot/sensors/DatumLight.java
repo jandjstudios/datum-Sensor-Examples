@@ -7,6 +7,7 @@ import com.revrobotics.ColorSensorV3.RawColor;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.ColorShim;
 
+
 public class DatumLight {
 
     DatumSerial serial;
@@ -15,34 +16,35 @@ public class DatumLight {
     JsonNode datum;
    
     public DatumLight(String port) {
-
         serial = new DatumSerial(port);
         configureSensor();
     }
 
     public void configureProximitySensorLED(){
-        serial.write("set /sensor/config/proximity?LEDstrength=25 mA");
+        serial.write("set /sensor/proximity/config?LEDstrength=25");        
     }
 
     public void configureProximitySensor(){
-        serial.write("set /sensor/proximity/config?enabled=true&units=counts");
-        serial.write("set /sensor/proximity/config?gain=1");
+        serial.write("set /sensor/proximity/config?enabled=true&units=counts");        
+        serial.write("set /sensor/proximity/config?gain=1");        
         serial.write("set /sensor/proximity/config?filter=mean&sampleRate=100&dataRate=20");
+        
     }
 
     public void configureColorSensor(){
-        serial.write("set /sensor/proximity/config?enabled=true&units=counts");
-        serial.write("set /sensor/color/config?gain=1");
+        serial.write("set /sensor/proximity/config?enabled=true&units=counts");        
+        serial.write("set /sensor/color/config?gain=1");        
         serial.write("set /sensor/color/config?filter=mean&sampleRate=100&dataRate=20");
+        
     }
 
     public void configureSensor(){
+        serial.write("set /config?automaticReporting=false&compactReport=true&reportRate=20");
         
-        serial.write("set /config?autoReport=false&compactReport=true&reportRate=20");
         configureColorSensor();
         configureProximitySensor();
         configureProximitySensorLED();
-        serial.write("set /config?autoReport=true");
+        serial.write("set /config?automaticReporting=true");
     }
     
     public Color getColor() {

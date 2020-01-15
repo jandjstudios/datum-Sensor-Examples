@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
     Color response = light.getColor();
 
     System.out.print(tick++ + "\t");
-    System.out.println(response);
+    //System.out.println(response);
   }
 
   /**

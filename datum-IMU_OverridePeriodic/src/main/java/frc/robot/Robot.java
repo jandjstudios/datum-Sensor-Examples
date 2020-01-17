@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 import frc.robot.datum.*;
 
@@ -33,8 +33,8 @@ public class Robot extends TimedRobot {
 
   int tick = 0;
 
-  DatumLight datumLight = new DatumLight("COM3");
-  //SerialPort datumLight = new SerialPort(Port.kUSB1);
+  DatumIMU datumIMU = new DatumIMU("COM5");
+  //DatumIMU datumIMU = new SerialPort(Port.kUSB1);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -89,12 +89,15 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
 
-    double timestamp = datumLight.getTimestamp();
-    Color response = datumLight.getColor();
-    int proximity = datumLight.getProximity();
+    double timestamp = datumIMU.getTimestamp();
+    DatumIMU.DataPacket acc = datumIMU.getAccelerometer();
+    DatumIMU.DataPacket gyro = datumIMU.getGyro();
+    DatumIMU.DataPacket mag = datumIMU.getMagnetometer();
 
-    System.out.print(tick++ + "\t");
-    System.out.println(timestamp + "\t" + response.red + "\t" + response.green + "\t" + response.blue + "\t" + proximity);
+    System.out.print(tick++ + "\t" + timestamp + "\t");
+    System.out.print(acc.t + "\t" + acc.x  + "\t" + acc.y  + "\t"  + acc.z  + "\t");
+    System.out.print(gyro.t + "\t" + gyro.x  + "\t" + gyro.y  + "\t"  + gyro.z + "\t");
+    System.out.println(mag.t + "\t" + mag.x  + "\t" + mag.y  + "\t"  + mag.z);
     
   }
 

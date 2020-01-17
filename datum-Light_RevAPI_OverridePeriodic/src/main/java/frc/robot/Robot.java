@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 import frc.robot.datum.*;
 
@@ -31,7 +32,9 @@ public class Robot extends TimedRobot {
   private final Timer m_timer = new Timer();
 
   int tick = 0;
+
   DatumLight light = new DatumLight("COM3");
+  //DatumLight light = new DatumLight(Port.kUSB1);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -86,12 +89,11 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
 
-    //light.teleopPeriodic();
     Color response = light.getColor();
     int proximity = light.getProximity();
 
-    //System.out.print(tick++ + "\t");
-    //System.out.println(response.red + "\t" + response.green + "\t" + response.blue + "\t" + proximity);
+    System.out.print(tick++ + "\t");
+    System.out.println(response.red + "\t" + response.green + "\t" + response.blue + "\t" + proximity);
     
   }
 

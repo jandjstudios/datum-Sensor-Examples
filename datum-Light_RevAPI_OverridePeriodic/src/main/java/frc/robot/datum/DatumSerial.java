@@ -1,8 +1,5 @@
 package frc.robot.datum;
 
-import java.io.OutputStream;
-import edu.wpi.first.wpilibj.Timer;
-
 import com.fazecast.jSerialComm.*;
 
 public class DatumSerial {
@@ -52,15 +49,18 @@ public class DatumSerial {
         return receivedData;
     }
 
-    public String readString(int count){
-        //byte[] receivedData = read(count);
-        //return receivedData.toString();    
-        return read(count).toString();
+    public byte[] read(){
+        int count = getBytesReceived();
+        return read(count);
+    }
+
+    public String readString(int count){             
+        return new String(read(count));
     }
     
     public String readString(){
-        Integer byteCount = serialPort.bytesAvailable();
-        return readString(byteCount);
+        int count = serialPort.bytesAvailable();
+        return readString(count);
     }
 
     /*

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.util.Color;
 
-import frc.robot.sensors.*;
+import frc.robot.datum.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -77,9 +77,10 @@ public class Robot extends TimedRobot {
     m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
 
     Color response = light.getColor();
+    int proximity = light.getProximity();
 
     System.out.print(tick++ + "\t");
-    System.out.println(response.red + "\t" + response.green + "\t" + response.blue);
+    System.out.println(response.red + "\t" + response.green + "\t" + response.blue + "\t" + proximity);
     
   }
 

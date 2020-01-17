@@ -1,5 +1,5 @@
 
-package frc.robot.sensors;
+package frc.robot.datum;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revrobotics.ColorSensorV3.RawColor;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.ColorShim;
+import edu.wpi.first.wpilibj.Timer;
 
 import com.fazecast.jSerialComm.*;
 
@@ -17,7 +18,7 @@ public class DatumLight {
 
     SerialPort serialPort;
     JsonNode datum;
-    ObjectMapper mapper = new ObjectMapper();
+    //ObjectMapper mapper = new ObjectMapper();
 
     public DatumLight(String port) {
         try {
@@ -26,6 +27,7 @@ public class DatumLight {
             serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 100);
 
             serialPort.openPort();
+
             serialPort.addDataListener(new SerialPortMessageListener() {
                 @Override
                 public int getListeningEvents() {
@@ -46,9 +48,9 @@ public class DatumLight {
                 public void serialEvent(SerialPortEvent event) {
                     byte[] delimitedMessage = event.getReceivedData();
                     try {
+                        ObjectMapper mapper = new ObjectMapper();
                         datum = mapper.readValue(delimitedMessage, JsonNode.class);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }                
                 }               
@@ -65,6 +67,7 @@ public class DatumLight {
             command = command + "\r\n";
             OutputStream dataOut = serialPort.getOutputStream();
             dataOut.write(command.getBytes());
+            Timer.delay(0.02);
         }
         catch (Exception ex) {
             System.out.println(ex);
@@ -97,11 +100,10 @@ public class DatumLight {
     
     public Color getColor() {
 
-        double red = datum.get("color").get("red").get(0).asInt()/65535.0;
-        double green = datum.get("color").get("green").get(0).asInt()/65535.0;
-        double blue = datum.get("color").get("blue").get(0).asInt()/65535.0;
+        double red = getRed()/65535.0;
+        double green = getGreen()/65535.0;
+        double blue = getBlue()/65535.0;
         ColorShim color = new ColorShim(red, green, blue);
-
         return color;
     }
 
@@ -110,7 +112,6 @@ public class DatumLight {
         int green = getGreen();
         int blue = getBlue();
         int IR = getIR();
-
         return new RawColor(red, green, blue, IR);
     }
 

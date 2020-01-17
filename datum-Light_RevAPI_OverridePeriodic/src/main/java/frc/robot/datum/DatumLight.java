@@ -103,6 +103,10 @@ public class DatumLight extends SubsystemBase {
         write("set /config?automaticReporting=true");
     }
     
+    public double getTimestamp(){
+        return datum.get("timestamp").asDouble();
+    }
+
     public Color getColor() {
 
         double red = getRed()/65535.0;

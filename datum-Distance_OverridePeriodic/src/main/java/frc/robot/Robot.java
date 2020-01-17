@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 import frc.robot.datum.*;
 
@@ -33,8 +33,8 @@ public class Robot extends TimedRobot {
 
   int tick = 0;
 
-  DatumLight datumLight = new DatumLight("COM3");
-  //DatumLight datumLight = new DatumLight(Port.kUSB1);
+  DatumDistance datumDistance = new DatumDistance("COM4");
+  //DatumDistance datumDistance = new DatumDistance(Port.kUSB1);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -89,12 +89,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
 
-    double timestamp = datumLight.getTimestamp();
-    Color response = datumLight.getColor();
-    int proximity = datumLight.getProximity();
+    double timestamp = datumDistance.getTimestamp();
+    double distance = datumDistance.getDistance();
+    double signalRateReturn = datumDistance.getSignalRateReturn();
+    double ambientRateReturn = datumDistance.getAmbientRateReturn();
+    String status = datumDistance.getStatus();
 
     System.out.print(tick++ + "\t");
-    System.out.println(timestamp + "\t" + response.red + "\t" + response.green + "\t" + response.blue + "\t" + proximity);
+    System.out.println(timestamp + "\t" + distance + "\t" + signalRateReturn  + "\t" + ambientRateReturn  + "\t"  + status);
     
   }
 

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.robot.datum.*;
 
@@ -49,6 +50,15 @@ public class Robot extends TimedRobot {
     m_timer.start();
   }
 
+  @Override
+  public void robotPeriodic() {
+    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+    // commands, running already-scheduled commands, removing finished or interrupted commands,
+    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // block in order for anything in the Command-based framework to work.
+    CommandScheduler.getInstance().run();
+  }
+
   /**
    * This function is called periodically during autonomous.
    */
@@ -76,11 +86,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
 
+    //light.teleopPeriodic();
     Color response = light.getColor();
     int proximity = light.getProximity();
 
-    System.out.print(tick++ + "\t");
-    System.out.println(response.red + "\t" + response.green + "\t" + response.blue + "\t" + proximity);
+    //System.out.print(tick++ + "\t");
+    //System.out.println(response.red + "\t" + response.green + "\t" + response.blue + "\t" + proximity);
     
   }
 

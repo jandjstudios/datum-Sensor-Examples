@@ -10,64 +10,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revrobotics.ColorSensorV3.RawColor;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.ColorShim;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 
-import com.fazecast.jSerialComm.*;
+//import com.fazecast.jSerialComm.*;
+import frc.robot.datum.DatumSerial;
 
-public class DatumLight {
+public class DatumLight extends SubsystemBase {
 
-    SerialPort serialPort;
+    DatumSerial serialPort;
     JsonNode datum;
-    //ObjectMapper mapper = new ObjectMapper();
+    String receiveBuffer = "";
 
     public DatumLight(String port) {
-        try {
-            serialPort = SerialPort.getCommPort(port);
-            serialPort.setComPortParameters(921600, 8, 1, SerialPort.NO_PARITY);
-            serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 100);
-
-            serialPort.openPort();
-
-            serialPort.addDataListener(new SerialPortMessageListener() {
-                @Override
-                public int getListeningEvents() {
-                    return SerialPort.LISTENING_EVENT_DATA_RECEIVED;
-                }
-
-                @Override
-                public byte[] getMessageDelimiter() {
-                    return new byte[] { (byte) 0x0d, (byte) 0x0a };
-                }
-
-                @Override
-                public boolean delimiterIndicatesEndOfMessage() {
-                    return true;
-                }
-
-                @Override
-                public void serialEvent(SerialPortEvent event) {
-                    byte[] delimitedMessage = event.getReceivedData();
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        datum = mapper.readValue(delimitedMessage, JsonNode.class);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }                
-                }               
-            });             
-        }
-        catch (Exception  ex){
-            System.out.println(ex);
-        }
+        serialPort = new DatumSerial(921600, port);
         configureSensor();
+    }
+
+    @Override
+    public void periodic() {
+        //System.out.println("DatumLight periodic");
+        while (serialPort.getBytesReceived() > 0){
+            System.out.println(serialPort.getBytesReceived());
+            String receiveChar = serialPort.readString(1);
+            System.out.println(receiveChar);
+        }
     }
 
     public void write(String command){        
         try {
             command = command + "\r\n";
-            OutputStream dataOut = serialPort.getOutputStream();
-            dataOut.write(command.getBytes());
-            Timer.delay(0.02);
+            serialPort.writeString(command);
+            //OutputStream dataOut = serialPort.getOutputStream();
+            //dataOut.write(command.getBytes());
+            Timer.delay(0.01);
         }
         catch (Exception ex) {
             System.out.println(ex);
@@ -95,7 +72,7 @@ public class DatumLight {
         configureColorSensor();
         configureProximitySensor();
         configureProximitySensorLED();
-        write("set /config?automaticReporting=true");
+        //write("set /config?automaticReporting=true");
     }
     
     public Color getColor() {
@@ -116,27 +93,27 @@ public class DatumLight {
     }
 
     public int getRed(){
-        int color = datum.get("color").get("red").get(0).asInt();
+        int color = 0; //datum.get("color").get("red").get(0).asInt();
         return color;
     }
 
     public int getGreen(){
-        int color = datum.get("color").get("green").get(0).asInt();
+        int color = 0; //datum.get("color").get("green").get(0).asInt();
         return color;
     }
 
     public int getBlue(){
-        int color = datum.get("color").get("blue").get(0).asInt();
+        int color = 0; //datum.get("color").get("blue").get(0).asInt();
         return color;
     }
 
     public int getIR(){
-        int color = datum.get("color").get("ambient").get(0).asInt();
+        int color = 0; //datum.get("color").get("ambient").get(0).asInt();
         return color;
     }
 
     public int getProximity(){
-        int proximity = datum.get("proximity").get("proximity").get(0).asInt();
+        int proximity = 0; //datum.get("proximity").get("proximity").get(0).asInt();
         return proximity;
     }
 

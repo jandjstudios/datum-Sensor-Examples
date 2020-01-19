@@ -9,8 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import frc.robot.datum.DatumSerial;
-//import edu.wpi.first.wpilibj.SerialPort;
-//import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class DatumDistance extends SubsystemBase {
 
@@ -23,14 +22,11 @@ public class DatumDistance extends SubsystemBase {
         configureSensor();
     }
 
-    /*
-    SerialPort serialPort;
-    public DatumDistance(Port port) {
-        serialPort = new SerialPort(921600, port);
+    public DatumLight(Port port) {
+        datumSerial = new DatumSerial(921600, port);
         configureSensor();
     }
-    */
-
+    
     @Override
     public void periodic() {
 

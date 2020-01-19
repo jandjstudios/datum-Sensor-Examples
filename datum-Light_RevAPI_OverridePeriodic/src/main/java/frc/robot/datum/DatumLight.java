@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.ColorShim;
 
 import frc.robot.datum.DatumSerial;
-//import edu.wpi.first.wpilibj.SerialPort;
-//import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class DatumLight extends SubsystemBase {
 

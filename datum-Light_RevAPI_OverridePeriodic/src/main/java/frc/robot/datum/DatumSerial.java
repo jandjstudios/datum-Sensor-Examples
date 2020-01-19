@@ -2,6 +2,7 @@ package frc.robot.datum;
 
 import com.fazecast.jSerialComm.*;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.Timer;
 
 public class DatumSerial {
 
@@ -92,6 +93,35 @@ public class DatumSerial {
         catch (Exception ex) {
             System.out.println(ex);
             return -1;
+        }
+    }
+
+    // The following methods are specific to the datum sensors for confirming commands sent 
+    // have been received.
+
+    public boolean getResponse(){
+        String response = readString();
+        if (response.contains("200 OK")){
+            return true;
+        }        
+        else {
+            System.out.print(response);
+            return false;
+        }
+    }
+
+    public void sendCommand(String command){        
+        try {
+            command = command + "\r\n";
+            writeString(command);
+
+            Timer.delay(0.05);
+            if (getResponse() == false){
+                System.out.print(command);
+            }
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
         }
     }
 

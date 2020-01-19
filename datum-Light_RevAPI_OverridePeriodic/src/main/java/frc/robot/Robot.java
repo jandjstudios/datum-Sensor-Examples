@@ -33,7 +33,9 @@ public class Robot extends TimedRobot {
 
   int tick = 0;
 
-  DatumLight datumLight = new DatumLight("COM3");
+  //DatumLight datumLight = new DatumLight("COM3");
+  DatumLight datumLight = new DatumLight("/dev/ttyACM0");
+
   //DatumLight datumLight = new DatumLight(Port.kUSB1);
 
   /**

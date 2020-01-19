@@ -2,40 +2,35 @@
 package frc.robot.datum;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.Timer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import frc.robot.datum.DatumSerial;
-//import edu.wpi.first.wpilibj.SerialPort;
-//import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class DatumIMU extends SubsystemBase {
 
     JsonNode datum;
     String receiveBuffer = "";
-    
-    DatumSerial serialPort;
+    DatumSerial datumSerial;
+
     public DatumIMU(String port) {
-        serialPort = new DatumSerial(921600, port);
+        datumSerial = new DatumSerial(921600, port);
         configureSensor();
     }
 
-    /*
-    SerialPort serialPort;
     public DatumIMU(Port port) {
-        serialPort = new SerialPort(921600, port);
+        datumSerial = new DatumSerial(921600, port);
         configureSensor();
     }
-    */
 
     @Override
     public void periodic() {
 
-        while (serialPort.getBytesReceived() > 0) {
-            byte[] inputChar = serialPort.read(1);
+        while (datumSerial.getBytesReceived() > 0) {
+            byte[] inputChar = datumSerial.read(1);
             receiveBuffer += new String(inputChar);
 
             if (inputChar[0] == 13) {
@@ -51,31 +46,6 @@ public class DatumIMU extends SubsystemBase {
         }        
     }
 
-    public void write(String command){        
-        try {
-            command = command + "\r\n";
-            serialPort.writeString(command);
-            Timer.delay(0.05);
-            if (getResponse() == false){
-                System.out.print(command);
-            }
-        }
-        catch (Exception ex) {
-            System.out.println(ex);
-        }
-    }
-
-    public boolean getResponse(){
-        String response = serialPort.readString();
-        if (response.contains("200 OK")){
-            return true;
-        }        
-        else {
-            System.out.print(response);
-            return false;
-        }
-    }
-
     public class DataPacket{
         public double t;
         public double x;
@@ -84,29 +54,29 @@ public class DatumIMU extends SubsystemBase {
     }
 
     public void configureAccelerometer(){
-        write("set /sensor/accelerometer/config?enabled=true");
-        write("set /sensor/accelerometer/config?units=g&range=2");
-        write("set /sensor/accelerometer/config?filterType=mean&sampleRate=119&dataRate=25");
+        datumSerial.sendCommand("set /sensor/accelerometer/config?enabled=true");
+        datumSerial.sendCommand("set /sensor/accelerometer/config?units=g&range=2");
+        datumSerial.sendCommand("set /sensor/accelerometer/config?filterType=mean&sampleRate=119&dataRate=25");
     }
 
     public void configureGyro(){
-        write("set /sensor/gyro/config?enabled=true");
-        write("set /sensor/gyro/config?units=dps&range=245 dps");
-        write("set /sensor/gyro/config?filterType=mean&sampleRate=119&dataRate=25");
+        datumSerial.sendCommand("set /sensor/gyro/config?enabled=true");
+        datumSerial.sendCommand("set /sensor/gyro/config?units=dps&range=245 dps");
+        datumSerial.sendCommand("set /sensor/gyro/config?filterType=mean&sampleRate=119&dataRate=25");
     }
 
     public void configureMagnetometer(){
-        write("set /sensor/magnetometer/config?enabled=true");
-        write("set /sensor/magnetometer/config?units=G&range=4 G");
-        write("set /sensor/magnetometer/config?filterType=mean&sampleRate=80&dataRate=25");
+        datumSerial.sendCommand("set /sensor/magnetometer/config?enabled=true");
+        datumSerial.sendCommand("set /sensor/magnetometer/config?units=G&range=4 G");
+        datumSerial.sendCommand("set /sensor/magnetometer/config?filterType=mean&sampleRate=80&dataRate=25");
     }
 
     public void configureSensor(){
-        write("set /config?automaticReporting=false&compactReport=true&reportRate=25");
+        datumSerial.sendCommand("set /config?automaticReporting=false&compactReport=true&reportRate=25");
         configureAccelerometer();
         configureGyro();
         configureMagnetometer();
-        write("set /config?automaticReporting=true");
+        datumSerial.sendCommand("set /config?automaticReporting=true");
     }
     
     public double getTimestamp(){

@@ -32,7 +32,8 @@ public class Robot extends TimedRobot {
 
   int tick = 0;
 
-  DatumDistance datumDistance = new DatumDistance("COM4");
+  //DatumDistance datumDistance = new DatumDistance("COM4");
+  DatumDistance datumDistance = new DatumDistance("/dev/ttyACM2");
   //DatumDistance datumDistance = new DatumDistance(Port.kUSB1);
 
   /**
@@ -94,8 +95,8 @@ public class Robot extends TimedRobot {
     double ambientRateReturn = datumDistance.getAmbientRateReturn();
     String status = datumDistance.getStatus();
 
-    System.out.print(tick++ + "\t");
-    System.out.println(timestamp + "\t" + distance + "\t" + signalRateReturn  + "\t" + ambientRateReturn  + "\t"  + status);
+    System.out.print(tick++ + "  ");
+    System.out.println(timestamp + "  " + distance + "  " + signalRateReturn  + "  " + ambientRateReturn  + "  "  + status);
     
   }
 

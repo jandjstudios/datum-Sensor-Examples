@@ -33,7 +33,9 @@ public class Robot extends TimedRobot {
 
   int tick = 0;
 
-  DatumIMU datumIMU = new DatumIMU("COM5");
+  //DatumIMU datumIMU = new DatumIMU("COM5");
+  DatumIMU datumIMU = new DatumIMU("/dev/ttyACM1");
+
   //DatumIMU datumIMU = new SerialPort(Port.kUSB1);
 
   /**
@@ -94,10 +96,10 @@ public class Robot extends TimedRobot {
     DatumIMU.DataPacket gyro = datumIMU.getGyro();
     DatumIMU.DataPacket mag = datumIMU.getMagnetometer();
 
-    System.out.print(tick++ + "\t" + timestamp + "\t");
-    System.out.print(acc.t + "\t" + acc.x  + "\t" + acc.y  + "\t"  + acc.z  + "\t");
-    System.out.print(gyro.t + "\t" + gyro.x  + "\t" + gyro.y  + "\t"  + gyro.z + "\t");
-    System.out.println(mag.t + "\t" + mag.x  + "\t" + mag.y  + "\t"  + mag.z);
+    System.out.print(tick++ + "  " + timestamp + "  ");
+    System.out.print(acc.t + "  " + acc.x  + "  " + acc.y  + "  "  + acc.z  + "  ");
+    System.out.print(gyro.t + "  " + gyro.x  + "  " + gyro.y  + "  "  + gyro.z + "  ");
+    System.out.println(mag.t + "  " + mag.x  + "  " + mag.y  + "  "  + mag.z);
     
   }
 

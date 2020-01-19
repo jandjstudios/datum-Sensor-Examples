@@ -16,13 +16,14 @@ public class DatumDistance extends SubsystemBase {
     JsonNode datum;
     String receiveBuffer = "";
     
-    DatumSerial serialPort;
+    DatumSerial datumSerial;
+
     public DatumDistance(String port) {
-        serialPort = new DatumSerial(921600, port);
+        datumSerial = new DatumSerial(921600, port);
         configureSensor();
     }
 
-    public DatumLight(Port port) {
+    public DatumDistance(Port port) {
         datumSerial = new DatumSerial(921600, port);
         configureSensor();
     }
@@ -30,8 +31,8 @@ public class DatumDistance extends SubsystemBase {
     @Override
     public void periodic() {
 
-        while (serialPort.getBytesReceived() > 0) {
-            byte[] inputChar = serialPort.read(1);
+        while (datumSerial.getBytesReceived() > 0) {
+            byte[] inputChar = datumSerial.read(1);
             receiveBuffer += new String(inputChar);
 
             if (inputChar[0] == 13) {
@@ -47,43 +48,18 @@ public class DatumDistance extends SubsystemBase {
         }        
     }
 
-    public void write(String command){        
-        try {
-            command = command + "\r\n";
-            serialPort.writeString(command);
-            Timer.delay(0.05);
-            if (getResponse() == false){
-                System.out.print(command);
-            }
-        }
-        catch (Exception ex) {
-            System.out.println(ex);
-        }
-    }
-
-    public boolean getResponse(){
-        String response = serialPort.readString();
-        if (response.contains("200 OK")){
-            return true;
-        }        
-        else {
-            System.out.print(response);
-            return false;
-        }
-    }
-
     public void configureDistanceSensor(){
-        write("set /sensor/distance/config?enabled=true&units=mm");
-        write("set /sensor/distance/config?showStatusInfo=true&showRateReturnInfo=true");
-        write("set /sensor/distance/config?distanceMode=short");
-        write("set /sensor/distance/config?timingBudget=20&interMeasurementPeriod=25");
-        write("set /sensor/distance/config?filter=none&sampleRate=50&dataRate=50");
+        datumSerial.sendCommand("set /sensor/distance/config?enabled=true&units=mm");
+        datumSerial.sendCommand("set /sensor/distance/config?showStatusInfo=true&showRateReturnInfo=true");
+        datumSerial.sendCommand("set /sensor/distance/config?distanceMode=short");
+        datumSerial.sendCommand("set /sensor/distance/config?timingBudget=20&interMeasurementPeriod=25");
+        datumSerial.sendCommand("set /sensor/distance/config?filter=none&sampleRate=50&dataRate=50");
     }
 
     public void configureSensor(){
-        write("set /config?automaticReporting=false&compactReport=true&reportRate=50");
+        datumSerial.sendCommand("set /config?automaticReporting=false&compactReport=true&reportRate=50");
         configureDistanceSensor();
-        write("set /config?automaticReporting=true");
+        datumSerial.sendCommand("set /config?automaticReporting=true");
     }
     
     public double getTimestamp(){

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 import frc.robot.datum.*;
 
@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
   int tick = 0;
 
   DatumLight datumLight = new DatumLight("COM3");
-  //SerialPort datumLight = new SerialPort(Port.kUSB1);
+  //DatumLight datumLight = new DatumLight(Port.kUSB1);
 
   /**
    * This function is run when the robot is first started up and should be

@@ -8,6 +8,12 @@ public class DatumSerial {
 
     public DatumSerial(int baud, String port){
         try{
+            SerialPort[] ports = SerialPort.getCommPorts();
+            System.out.println("\nAvailable Ports:\n");
+            for (int i = 0; i < ports.length; ++i)
+                System.out.println(ports[i].getSystemPortName() + ": " + 
+                    ports[i].getDescriptivePortName() + '\t' + ports[i].getPortDescription());
+
             serialPort = SerialPort.getCommPort(port);
             serialPort.setComPortParameters(baud, 8, 1, SerialPort.NO_PARITY);
             serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 100);

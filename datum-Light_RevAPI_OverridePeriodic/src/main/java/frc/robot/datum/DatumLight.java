@@ -20,26 +20,86 @@ public class DatumLight extends SubsystemBase {
 
     JsonNode datum;
     String receiveBuffer = "";
-    
-    DatumSerial serialPort;
+    private boolean useDatumSerial = true;
+
+    SerialPort serialPort;
+    DatumSerial datumSerial;
+
     public DatumLight(String port) {
-        serialPort = new DatumSerial(921600, port);
+        datumSerial = new DatumSerial(921600, port);
+        useDatumSerial = true;
         configureSensor();
     }
 
-    /*
-    SerialPort serialPort;
     public DatumLight(Port port) {
         serialPort = new SerialPort(921600, port);
+        useDatumSerial = false;
         configureSensor();
     }
-    */
+
+    public int getBytesReceived() {
+        if (useDatumSerial){
+            return datumSerial.getBytesReceived();
+        }
+        else {
+            return serialPort.getBytesReceived();
+        }
+    }
+
+    public byte[] read(int count){
+        if (useDatumSerial){
+            return datumSerial.read(count);
+        }
+        else {
+            return serialPort.read(count);
+        }
+    }
+
+    public String readString(){
+        if (useDatumSerial){
+            return datumSerial.readString();
+        }
+        else {
+            return serialPort.readString();
+        }
+    }
+
+    public void write(String command){        
+        try {
+            command = command + "\r\n";
+            if (useDatumSerial){
+                datumSerial.writeString(command);
+            }
+            else {
+                serialPort.writeString(command);
+            }
+
+            Timer.delay(0.05);
+            if (getResponse() == false){
+                System.out.print(command);
+            }
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public boolean getResponse(){
+        String response = readString();
+        if (response.contains("200 OK")){
+            return true;
+        }        
+        else {
+            System.out.print(response);
+            return false;
+        }
+    }
 
     @Override
     public void periodic() {
 
-        while (serialPort.getBytesReceived() > 0) {
-            byte[] inputChar = serialPort.read(1);
+        while (getBytesReceived() > 0) {
+            byte[] inputChar = read(1);
             receiveBuffer += new String(inputChar);
 
             if (inputChar[0] == 13) {
@@ -52,31 +112,6 @@ public class DatumLight extends SubsystemBase {
                 receiveBuffer = "";
             }
         }        
-    }
-
-    public void write(String command){        
-        try {
-            command = command + "\r\n";
-            serialPort.writeString(command);
-            Timer.delay(0.05);
-            if (getResponse() == false){
-                System.out.print(command);
-            }
-        }
-        catch (Exception ex) {
-            System.out.println(ex);
-        }
-    }
-
-    public boolean getResponse(){
-        String response = serialPort.readString();
-        if (response.contains("200 OK")){
-            return true;
-        }        
-        else {
-            System.out.print(response);
-            return false;
-        }
     }
 
     public void configureProximitySensorLED(){

@@ -11,10 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revrobotics.ColorSensorV3.RawColor;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.ColorShim;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 import frc.robot.datum.DatumSerial;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class DatumLight extends SubsystemBase {
 
@@ -22,57 +21,23 @@ public class DatumLight extends SubsystemBase {
     String receiveBuffer = "";
     private boolean useDatumSerial = true;
 
-    SerialPort serialPort;
     DatumSerial datumSerial;
 
     public DatumLight(String port) {
         datumSerial = new DatumSerial(921600, port);
-        useDatumSerial = true;
         configureSensor();
     }
 
     public DatumLight(Port port) {
-        serialPort = new SerialPort(921600, port);
-        useDatumSerial = false;
+        datumSerial = new DatumSerial(921600, port);
         configureSensor();
-    }
-
-    public int getBytesReceived() {
-        if (useDatumSerial){
-            return datumSerial.getBytesReceived();
-        }
-        else {
-            return serialPort.getBytesReceived();
-        }
-    }
-
-    public byte[] read(int count){
-        if (useDatumSerial){
-            return datumSerial.read(count);
-        }
-        else {
-            return serialPort.read(count);
-        }
-    }
-
-    public String readString(){
-        if (useDatumSerial){
-            return datumSerial.readString();
-        }
-        else {
-            return serialPort.readString();
-        }
     }
 
     public void write(String command){        
         try {
             command = command + "\r\n";
-            if (useDatumSerial){
                 datumSerial.writeString(command);
-            }
-            else {
-                serialPort.writeString(command);
-            }
+
 
             Timer.delay(0.05);
             if (getResponse() == false){
@@ -85,7 +50,7 @@ public class DatumLight extends SubsystemBase {
     }
 
     public boolean getResponse(){
-        String response = readString();
+        String response = datumSerial.readString();
         if (response.contains("200 OK")){
             return true;
         }        
@@ -98,8 +63,8 @@ public class DatumLight extends SubsystemBase {
     @Override
     public void periodic() {
 
-        while (getBytesReceived() > 0) {
-            byte[] inputChar = read(1);
+        while (datumSerial.getBytesReceived() > 0) {
+            byte[] inputChar = datumSerial.read(1);
             receiveBuffer += new String(inputChar);
 
             if (inputChar[0] == 13) {

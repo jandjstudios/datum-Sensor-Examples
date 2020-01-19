@@ -1,12 +1,16 @@
 package frc.robot.datum;
 
 import com.fazecast.jSerialComm.*;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class DatumSerial {
 
-    SerialPort serialPort;
+    SerialPort jSerialCommPort;
+    edu.wpi.first.wpilibj.SerialPort wpiSerialPort;
+    private boolean usejSerialCommPort = true;
 
     public DatumSerial(int baud, String port){
+        usejSerialCommPort = true;
         try{
             SerialPort[] ports = SerialPort.getCommPorts();
             System.out.println("\nAvailable Ports:\n");
@@ -14,45 +18,48 @@ public class DatumSerial {
                 System.out.println(ports[i].getSystemPortName() + ": " + 
                     ports[i].getDescriptivePortName() + '\t' + ports[i].getPortDescription());
 
-            serialPort = SerialPort.getCommPort(port);
-            serialPort.setComPortParameters(baud, 8, 1, SerialPort.NO_PARITY);
-            serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 100);
-            serialPort.openPort();
+            jSerialCommPort = SerialPort.getCommPort(port);
+            jSerialCommPort.setComPortParameters(baud, 8, 1, SerialPort.NO_PARITY);
+            jSerialCommPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 100);
+            jSerialCommPort.openPort();
         }
         catch(SerialPortInvalidPortException ex){
             System.out.println(ex);
         }
     }
 
+    public DatumSerial(int baud, Port port){
+        usejSerialCommPort = false;
+        wpiSerialPort = new edu.wpi.first.wpilibj.SerialPort(baud, port);
+    }
+
     public void close(){
-        serialPort.closePort();
+        if (usejSerialCommPort){
+            jSerialCommPort.closePort();
+        }
+        else {
+            wpiSerialPort.close();
+        }
     }
     
-    /*
-    public void	disableTermination(){
-
-    }
-
-    public void	enableTermination(){
-
-    }
-
-    public void	enableTermination​(char terminator){
-
-    }
-
-    public void	flush(){
-
-    }*/
-
     public int getBytesReceived(){
-        return serialPort.bytesAvailable();
+        if (usejSerialCommPort){
+            return jSerialCommPort.bytesAvailable();
+        }
+        else {
+            return wpiSerialPort.getBytesReceived();
+        }   
     }
 
     public byte[] read(int count){
-        byte[] receivedData = new byte[count];
-        serialPort.readBytes(receivedData, count);
-        return receivedData;
+        if (usejSerialCommPort){
+            byte[] receivedData = new byte[count];
+            jSerialCommPort.readBytes(receivedData, count);
+            return receivedData;
+        }
+        else {
+            return wpiSerialPort.read(count);
+        }
     }
 
     public byte[] read(){
@@ -65,44 +72,21 @@ public class DatumSerial {
     }
     
     public String readString(){
-        int count = serialPort.bytesAvailable();
+        int count = getBytesReceived();
         return readString(count);
     }
-
-    /*
-    public void	reset(){
-
-    }
-
-    public void	setFlowControl​(SerialPort.FlowControl flowControl){
-
-    }
-
-    public void	setReadBufferSize​(int size){
-
-    }
-
-    public void	setTimeout​(Double timeout){
-
-    }
-
-    public void	setWriteBufferMode​(SerialPort.WriteBufferMode mode){
-
-    }
-
-    public void	setWriteBufferSize​(int size){
-
-    }*/
     
     public int write(byte[] buffer, int count){
-        return serialPort.writeBytes(buffer, count);
+        if (usejSerialCommPort) {
+            return jSerialCommPort.writeBytes(buffer, count);
+        }
+        else {
+            return wpiSerialPort.write(buffer, count);
+        }
     }
 
     public int writeString(String data){
         try {
-            //data = data + "\r\n";
-            //OutputStream dataOut = serialPort.getOutputStream();
-            //dataOut.write(data.getBytes());
             return write(data.getBytes(), data.length());            
         }
         catch (Exception ex) {
@@ -110,4 +94,27 @@ public class DatumSerial {
             return -1;
         }
     }
+
+    /*
+    public void	disableTermination(){}
+
+    public void	enableTermination(){}
+
+    public void	enableTermination​(char terminator){}
+
+    public void	flush(){}
+
+    public void	reset(){}
+
+    public void	setFlowControl​(SerialPort.FlowControl flowControl){}
+
+    public void	setReadBufferSize​(int size){}
+
+    public void	setTimeout​(Double timeout){}
+
+    public void	setWriteBufferMode​(SerialPort.WriteBufferMode mode){}
+
+    public void	setWriteBufferSize​(int size){}
+    */    
 } 
+

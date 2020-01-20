@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 
@@ -33,9 +32,34 @@ public class Robot extends TimedRobot {
 
   int tick = 0;
 
-  //DatumIMU datumIMU = new DatumIMU("COM5");
-  DatumIMU datumIMU = new DatumIMU("/dev/ttyACM1");
+  // This example shows how to interface with one of the datum sensors.
+  // It uses the jSerialComm library to support communications with 
+  // the datum sensors.  Enter the port name as a string in the following 
+  // constructor to establish the communication link. The port name is the
+  // same one used by the host OS.  On Windows it will typically be 'COMx' 
+  // where 'x' is 1, 2, 3, 4, etc.  On Linux and MacOS it is typically 
+  // '/dev/ttyACMx' or similar.  The value of 'x' here will be 0, 1, 2, 
+  // 3, etc.  When the constructor is called it prints a list of available
+  // ports to the console to aid in troubleshooting and debugging.
+  //
+  // The jSerialComm library also allows the datum sensors to be used in 
+  // the simulator.  Simply enter the appropriate port name and execute 
+  // 'WPILib: Simulate Robot Code on Desktop'.  The data sent from the 
+  // sensor will be exactly the same as data sent when it is installed on
+  // the robot.
+  //  
+  // Note that by using the jSerialComm library it is also possible to use
+  // more than two USB serial devices at the same time on the roboRIO.  
+  // Most USB hubs are supported by the roboRIO making it very easy to 
+  // expand the number of sensors used.
 
+  DatumIMU datumIMU = new DatumIMU("/dev/ttyACM1");
+  //DatumIMU datumIMU = new DatumIMU("COM5");
+
+  // Comment out any previous declarations and uncomment this declaration
+  // to use the WPILib SerialPort library.  The DatumSerial class auto-
+  // matically determines which library to use based on the type passed 
+  // to the constructor.  
   //DatumIMU datumIMU = new SerialPort(Port.kUSB1);
 
   /**
@@ -54,6 +78,11 @@ public class Robot extends TimedRobot {
     m_timer.reset();
     m_timer.start();
   }
+
+  // The following is necessary to trigger the method monitoring incoming
+  // data on the serial port.  Command based project will already have 
+  // this implemented.  It is included here to demonstrate using this 
+  // capability in a TimedRobot project.
 
   @Override
   public void robotPeriodic() {

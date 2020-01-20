@@ -101,7 +101,6 @@ public class DatumSerial {
 
     public boolean getResponse(){
         String response = readString();
-        System.out.println(response);
         if (response.contains("200 OK")){
             return true;
         }        

@@ -18,13 +18,22 @@ public class DatumLight extends SubsystemBase {
     JsonNode datum;
     String receiveBuffer = "";
     DatumSerial datumSerial;
-    String friendlyName = "";
 
+    // Constructors for the datum sensors.  The first constructor accepts
+    // a string argument corresponding to the port name of the host OS.
+    // The DatumSerial class depends on jSerialComm.  To use this in the 
+    // simulator or on the roboRIO you must include the following line in
+    // your build.gradle file under dependencies.  More information on
+    // jSerialComm can be found at https://fazecast.github.io/jSerialComm/.
+    //
+    // compile 'com.fazecast:jSerialComm:[2.0.0,3.0.0)'
+    //
+    // The second constructor uses the WPILib SerialPort.Port to identify
+    // using the serial port libraries included in WPILib.
+    
     public DatumLight(String port) {
         datumSerial = new DatumSerial(921600, port);
         configureSensor();
-        friendlyName = datumSerial.sendCommand("get /config/friendlyName");
-        System.out.println("friendlyName: " + friendlyName);
     }
 
     public DatumLight(Port port) {
@@ -32,6 +41,13 @@ public class DatumLight extends SubsystemBase {
         configureSensor();
     }
     
+    // Incoming data is captured by overriding the periodic method of
+    // SubsystemBase.  The data is read in and if a new line is detected
+    // the received data packet is passed to the object mapper for
+    // parsing.  TimedRobot projects must also override the robotPeriodic
+    // method in Robot.java.  Command based projects should already have
+    // this override in place.
+
     @Override
     public void periodic() {     
         while (datumSerial.getBytesReceived() > 0) {
@@ -49,7 +65,12 @@ public class DatumLight extends SubsystemBase {
             }
         } 
     }
-    
+     
+    // The following methods provide a convenient way to configure
+    // the sensor specifically for you application.  If your sensor
+    // has been preconfigured it is not necessary to configure it 
+    // again.  All settings are stored directly on each datum sensor.
+
     public void configureProximitySensorLED(){
         datumSerial.sendCommand("set /sensor/proximity/config?LEDstrength=25");        
     }
@@ -74,6 +95,19 @@ public class DatumLight extends SubsystemBase {
         datumSerial.sendCommand("set /config?automaticReporting=true");
     }
     
+    // These methods demonstrate how to access the data parsed from the
+    // incoming JSON data packet. The incoming data packets are mapped 
+    // to a JsonNode in the DatumSerial class when a complete packet 
+    // has arrived.  Individual data elements can be accessed by using 
+    // the keys from the incoming data packet.  The values are 
+    // returned as an array.  Accessing the first value is done by the 
+    // '.get(0)' instruction. 
+    //
+    // These methods have been specifically modelled after the Rev Robotics
+    // Color Sensor API.  As such it is necessary to include the  Rev
+    // Robotics vendor dependencies.  More information is available at their
+    // web site, http://www.revrobotics.com/rev-31-1557/. 
+
     public double getTimestamp(){
         return datum.get("timestamp").asDouble();
     }

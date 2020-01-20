@@ -33,14 +33,14 @@ public class Robot extends TimedRobot {
   int tick = 0;
 
   // This example shows how to interface with one of the datum sensors.
-  // It uses the jSerialComm library to support communications with 
-  // the datum sensors.  Enter the port name as a string in the following 
-  // constructor to establish the communication link. The port name is the
-  // same one used by the host OS.  On Windows it will typically be 'COMx' 
-  // where 'x' is 1, 2, 3, 4, etc.  On Linux and MacOS it is typically 
-  // '/dev/ttyACMx' or similar.  The value of 'x' here will be 0, 1, 2, 
-  // 3, etc.  When the constructor is called it prints a list of available
-  // ports to the console to aid in troubleshooting and debugging.
+  // It uses the jSerialComm library to support communications. Enter the
+  // port name as a string in the following constructor to establish the
+  // communication link. The port name is the same one used by the host OS.
+  // On Windows it will typically be 'COMx' where 'x' is 1, 2, 3, 4, etc.  
+  // On Linux and MacOS it is typically '/dev/ttyACMx' or similar.  The 
+  // value of 'x' here will be 0, 1, 2, 3, etc.  When the constructor is 
+  // called it prints a list of available ports to the console to aid in 
+  // troubleshooting and debugging.
   //
   // The jSerialComm library also allows the datum sensors to be used in 
   // the simulator.  Simply enter the appropriate port name and execute 
@@ -53,13 +53,13 @@ public class Robot extends TimedRobot {
   // Most USB hubs are supported by the roboRIO making it very easy to 
   // expand the number of sensors used.
 
-  DatumIMU datumIMU = new DatumIMU("/dev/ttyACM1");
-  //DatumIMU datumIMU = new DatumIMU("COM5");
+  //DatumIMU datumIMU = new DatumIMU("/dev/ttyACM1");
+  DatumIMU datumIMU = new DatumIMU("COM5");
 
   // Comment out any previous declarations and uncomment this declaration
-  // to use the WPILib SerialPort library.  The DatumSerial class auto-
-  // matically determines which library to use based on the type passed 
-  // to the constructor.  
+  // to use the WPILib SerialPort library.  The communication library is
+  // automatically chosen based on the type passed into the constructor.
+
   //DatumIMU datumIMU = new SerialPort(Port.kUSB1);
 
   /**

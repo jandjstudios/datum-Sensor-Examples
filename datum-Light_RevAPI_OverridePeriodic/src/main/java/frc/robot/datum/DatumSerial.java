@@ -17,7 +17,7 @@ public class DatumSerial {
             System.out.println("\nAvailable Ports:\n");
             for (int i = 0; i < ports.length; ++i)
                 System.out.println(ports[i].getSystemPortName() + ": " + 
-                    ports[i].getDescriptivePortName() + ', ' + ports[i].getPortDescription());
+                    ports[i].getDescriptivePortName() + ", " + ports[i].getPortDescription());
 
             jSerialCommPort = SerialPort.getCommPort(port);
             jSerialCommPort.setComPortParameters(baud, 8, 1, SerialPort.NO_PARITY);
@@ -101,6 +101,7 @@ public class DatumSerial {
 
     public boolean getResponse(){
         String response = readString();
+        System.out.println(response);
         if (response.contains("200 OK")){
             return true;
         }        
@@ -110,19 +111,25 @@ public class DatumSerial {
         }
     }
 
-    public void sendCommand(String command){        
+    public String sendCommand(String command){        
+        String response = "";
         try {
             command = command + "\r\n";
             writeString(command);
-
             Timer.delay(0.05);
-            if (getResponse() == false){
+            if (getResponse() == true){
+                if (command.contains("get")){
+                    response = readString();
+                }
+            }
+            else {
                 System.out.print(command);
             }
         }
         catch (Exception ex) {
             System.out.println(ex);
         }
+        return response;
     }
 
     /* 

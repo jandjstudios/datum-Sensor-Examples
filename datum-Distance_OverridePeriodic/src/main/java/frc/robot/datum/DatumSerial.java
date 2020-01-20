@@ -17,7 +17,7 @@ public class DatumSerial {
             System.out.println("\nAvailable Ports:\n");
             for (int i = 0; i < ports.length; ++i)
                 System.out.println(ports[i].getSystemPortName() + ": " + 
-                    ports[i].getDescriptivePortName() + ', ' + ports[i].getPortDescription());
+                    ports[i].getDescriptivePortName() + ", " + ports[i].getPortDescription());
 
             jSerialCommPort = SerialPort.getCommPort(port);
             jSerialCommPort.setComPortParameters(baud, 8, 1, SerialPort.NO_PARITY);

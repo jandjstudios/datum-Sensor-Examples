@@ -18,10 +18,13 @@ public class DatumLight extends SubsystemBase {
     JsonNode datum;
     String receiveBuffer = "";
     DatumSerial datumSerial;
+    String friendlyName = "";
 
     public DatumLight(String port) {
         datumSerial = new DatumSerial(921600, port);
         configureSensor();
+        friendlyName = datumSerial.sendCommand("get /config/friendlyName");
+        System.out.println("friendlyName: " + friendlyName);
     }
 
     public DatumLight(Port port) {
